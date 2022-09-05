@@ -1,14 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useDrag } from "@use-gesture/react";
 import { animated, useSpring } from "@react-spring/three";
-import { useThree } from "@react-three/fiber";
 import * as THREE from "three";
-import {
-  Selection,
-  Select,
-  EffectComposer,
-  Outline,
-} from "@react-three/postprocessing";
+import { Select } from "@react-three/postprocessing";
 
 function Obj({
   mapSize,
@@ -16,15 +10,13 @@ function Obj({
   setIsDragging,
   floorPlane,
   children,
-  isChoose,
   ...props
 }) {
-  const [pos, setPos] = useState(defaultPos ? defaultPos : [0, 1, 0]);
-  const { size } = useThree();
+  const [pos, setPos] = useState(defaultPos ? defaultPos : [0, 0, 0]);
+  const [isActive, setActive] = useState(false);
   let planeIntersectPoint = new THREE.Vector3();
 
   const [spring, api] = useSpring(() => ({
-    mass: 1,
     position: pos,
     scale: 1,
     rotation: [0, 0, 0],
@@ -44,9 +36,7 @@ function Obj({
           setPos([planeIntersectPoint.x, defaultPos[1], planeIntersectPoint.z]);
         }
       }
-
       setIsDragging(active);
-
       api.start({
         position: pos,
         scale: active ? 1.2 : 1,
@@ -56,17 +46,30 @@ function Obj({
     { delay: true }
   );
 
+  const handleRotate = () => {
+    // console.log(rotation.getValue());
+  };
+
   return (
-    <Selection>
-      <EffectComposer multisampling={8} autoClear={false}>
-        <Outline blur visibleEdgeColor="white" edgeStrength={10} width={2000} />
-      </EffectComposer>
-      <Select enabled={isChoose}>
-        <animated.mesh {...spring} {...bind()} {...props} castShadow>
-          {children}
-        </animated.mesh>
-      </Select>
-    </Selection>
+    <Select enabled={isActive}>
+      <animated.mesh
+        {...spring}
+        {...bind()}
+        {...props}
+        onClick={(e) => {
+          props.onClick(e);
+          setActive(true);
+          handleRotate();
+        }}
+        onPointerMissed={() => {
+          props.onPointerMissed();
+          setActive(false);
+        }}
+        castShadow
+      >
+        {children}
+      </animated.mesh>
+    </Select>
   );
 }
 

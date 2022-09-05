@@ -1,10 +1,15 @@
-import { Canvas, useLoader } from "@react-three/fiber";
+import { Canvas, useFrame, useLoader } from "@react-three/fiber";
 import * as THREE from "three";
 import { OrbitControls, Stars } from "@react-three/drei";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
-import { Suspense, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import Obj from "./obj";
 import { models } from "./model";
+import {
+  EffectComposer,
+  Outline,
+  Selection,
+} from "@react-three/postprocessing";
 
 const DemoThree = () => {
   const [isDragging, setIsDragging] = useState(false);
@@ -15,7 +20,7 @@ const DemoThree = () => {
 
   const deleteCurrentItem = () => {
     const model = primitiveModels.findIndex(
-      (model) => model.key === currentModel.key
+      (model) => model?.key === currentModel?.key
     );
     setPrimitiveModels(
       primitiveModels.filter((value, index) => index !== model)
@@ -46,9 +51,10 @@ const DemoThree = () => {
     const obj = (
       <Obj
         key={Math.random()}
-        onClick={() => {
+        onClick={(e) => {
           setCurrentModel(obj);
         }}
+        onPointerMissed={() => setCurrentModel(null)}
         defaultPos={[
           Math.floor(Math.random() * 9),
           0,
@@ -75,7 +81,17 @@ const DemoThree = () => {
         <ambientLight intensity={1.2} color={0xffffff} />
         <Stars />
         <Plane />
-        {[...primitiveModels]}
+        <Selection>
+          <EffectComposer multisampling={8} autoClear={false}>
+            <Outline
+              blur
+              visibleEdgeColor="yellow"
+              edgeStrength={10}
+              width={2200}
+            />
+          </EffectComposer>
+          {[...primitiveModels]}
+        </Selection>
       </Canvas>
       <div
         style={{
@@ -102,7 +118,10 @@ const DemoThree = () => {
             alt={model.name}
           />
         ))}
-        <button onClick={deleteCurrentItem}>Remove item</button>
+        <div>
+          <button onClick={deleteCurrentItem}>Remove item</button>
+          <button onClick={deleteCurrentItem}>Rotate item</button>
+        </div>
       </div>
     </div>
   );
