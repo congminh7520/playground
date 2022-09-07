@@ -4,7 +4,7 @@ import { OrbitControls, Stars } from "@react-three/drei";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { Suspense, useEffect, useMemo, useState } from "react";
 import Obj from "./obj";
-import { models } from "./model";
+import { models, planes } from "./model";
 import {
   EffectComposer,
   Outline,
@@ -16,7 +16,23 @@ const DemoThree = () => {
   const mapSize = [20, 20];
   const floorPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
   const [primitiveModels, setPrimitiveModels] = useState([]);
+  const [isRotate, setIsRotate] = useState(false);
   const [currentModel, setCurrentModel] = useState();
+  const [ground,setGround] = useState(planes[0])
+
+  useEffect(() => {
+    setPrimitiveModels(
+      primitiveModels.map((model) => {
+        return {
+          ...model,
+          props: {
+            ...model.props,
+            isRotate,
+          },
+        };
+      })
+    );
+  }, [isRotate]);
 
   const deleteCurrentItem = () => {
     const model = primitiveModels.findIndex(
@@ -39,10 +55,14 @@ const DemoThree = () => {
   };
 
   const Plane = () => {
+    const texture = useLoader(
+      THREE.TextureLoader,
+      ground.url
+    );
     return (
       <mesh rotation={[-Math.PI / 2, 0, 0]}>
-        <planeBufferGeometry args={[20, 20]} />
-        <meshLambertMaterial color="#567d46" />
+        <planeBufferGeometry attach="geometry" args={[20, 20]} />
+        <meshBasicMaterial attach="material" map={texture} toneMapped={false} />
       </mesh>
     );
   };
@@ -54,6 +74,7 @@ const DemoThree = () => {
         onClick={(e) => {
           setCurrentModel(obj);
         }}
+        isRotate={isRotate}
         onPointerMissed={() => setCurrentModel(null)}
         defaultPos={[
           Math.floor(Math.random() * 9),
@@ -98,10 +119,11 @@ const DemoThree = () => {
           position: "absolute",
           top: 0,
           right: 0,
-          backgroundColor: "rgba(3, 44, 252,0.7)",
+          backgroundColor: "rgba(251, 255, 125,0.7)",
           padding: "20px",
         }}
       >
+        <h1>Models</h1>
         {models.map((model) => (
           <img
             style={{
@@ -118,9 +140,35 @@ const DemoThree = () => {
             alt={model.name}
           />
         ))}
+        <div
+          style={{
+            position: "absolute",
+            top: '100%',
+            right: 0,
+            backgroundColor: "rgba(251, 255, 125,0.7)",
+            padding: "20px",
+          }}
+        >
+          <h1>Planes</h1>
+          {planes.map((plane) => (
+            <img
+              style={{
+                width: 50,
+                height: 50,
+                marginRight: "12px",
+                cursor: "pointer",
+              }}
+              onClick={() => setGround(plane)}
+              key={plane.name}
+              src={plane.url}
+            />
+          ))}
+        </div>
         <div>
           <button onClick={deleteCurrentItem}>Remove item</button>
-          <button onClick={deleteCurrentItem}>Rotate item</button>
+          <button onClick={() => setIsRotate(!isRotate)}>
+            {isRotate ? "Drag" : "Rotate"}
+          </button>
         </div>
       </div>
     </div>

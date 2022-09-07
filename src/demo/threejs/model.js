@@ -20,3 +20,18 @@ export const models = [
     thumb: "https://be-dev.demetaverse.me/v1/storage/contents/bafybeibjqc7uv5rmtzt2tvemx6jz7blhbsrqz46ym6lrpo6hkyakrwbida",
   },
 ];
+
+export const planes=[
+  {
+    url:'https://c1.wallpaperflare.com/preview/274/721/67/rock-ground-cracks-desert.jpg',
+    name:'rock'
+  },
+  {
+    url:'https://be-dev.demetaverse.me/v1/storage/contents/bafkreihn74oyfol5j4aeibld5qktlpo6t2nuvezo3z3xc3hkjsa23zguum',
+    name:'forest'
+  },
+  {
+    url:'https://previews.123rf.com/images/jordano2000/jordano20001603/jordano2000160300041/55005157-crack-asphalt-background-real-photo-street-ground.jpg',
+    name:'street'
+  },
+]
