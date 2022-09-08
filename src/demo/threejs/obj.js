@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useDrag } from "@use-gesture/react";
 import { animated, useSpring } from "@react-spring/three";
 import * as THREE from "three";
@@ -6,23 +6,30 @@ import { Select } from "@react-three/postprocessing";
 
 function Obj({
   mapSize,
-  defaultPos,
+  position,
+  rotation,
   setIsDragging,
   floorPlane,
   children,
   isRotate,
   isAllowRotate,
+  handleAddModel,
+  model,
   ...props
 }) {
   const mesh = useRef();
-  const [pos, setPos] = useState(defaultPos ? defaultPos : [0, 0, 0]);
+  const [pos, setPos] = useState(position ? position : [0, 0, 0]);
   const [isActive, setActive] = useState(false);
   let planeIntersectPoint = new THREE.Vector3();
+
+  useEffect(() => {
+    handleAddModel({ ...mesh.current, ...model });
+  }, [mesh]);
 
   const [spring, api] = useSpring(() => ({
     position: pos,
     scale: 1,
-    rotation: [0, 0, 0],
+    rotation: rotation || [0, 0, 0],
     config: { friction: 10 },
   }));
 
@@ -35,14 +42,14 @@ function Obj({
         planeIntersectPoint.z < mapSize[1] / 2 - 1 &&
         planeIntersectPoint.z > -mapSize[1] / 2 + 1
       ) {
-        setPos([planeIntersectPoint.x, defaultPos[1], planeIntersectPoint.z]);
+        setPos([planeIntersectPoint.x, position[1], planeIntersectPoint.z]);
       }
     }
     setIsDragging(active);
     api.start(
       isRotate
         ? {
-            rotation: [0, mesh.current.rotation.y + 0.2, 0],
+            rotation: [0, mesh.current.rotation.y + 0.1, 0],
             scale: active ? 1.2 : 1,
           }
         : { position: pos, scale: active ? 1.2 : 1 }

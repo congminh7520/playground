@@ -1,7 +1,12 @@
-import { Canvas, useFrame, useLoader } from "@react-three/fiber";
+import { Canvas } from "@react-three/fiber";
 import * as THREE from "three";
-import { OrbitControls, Stars } from "@react-three/drei";
-import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
+import {
+  OrbitControls,
+  Stars,
+  useTexture,
+  Plane,
+  useGLTF,
+} from "@react-three/drei";
 import { Suspense, useEffect, useMemo, useState } from "react";
 import Obj from "./obj";
 import { models, planes } from "./model";
@@ -18,7 +23,10 @@ const DemoThree = () => {
   const [primitiveModels, setPrimitiveModels] = useState([]);
   const [isRotate, setIsRotate] = useState(false);
   const [currentModel, setCurrentModel] = useState();
-  const [ground,setGround] = useState(planes[0])
+  const [ground, setGround] = useState(planes[0]);
+
+  // Store an array of mesh info need to submit to api
+  const [objModels, setModels] = useState([]);
 
   useEffect(() => {
     setPrimitiveModels(
@@ -34,6 +42,22 @@ const DemoThree = () => {
     );
   }, [isRotate]);
 
+  useEffect(()=>{
+    const savedModels=JSON.parse(localStorage.getItem('models'))
+    savedModels?.map(model=>{
+      const data={
+        url:model.url,
+        thumb:model.thumb,
+        name:model.name
+      }
+      const char={
+        position:[model.position.x,model.position.y,model.position.z],
+        rotation:[0,model.rotation._y,0],
+      }
+      addNewPrimitiveModels(data,char)
+    })
+  },[])
+
   const deleteCurrentItem = () => {
     const model = primitiveModels.findIndex(
       (model) => model?.key === currentModel?.key
@@ -41,46 +65,59 @@ const DemoThree = () => {
     setPrimitiveModels(
       primitiveModels.filter((value, index) => index !== model)
     );
+    setModels(objModels.filter((value, index) => index !== model));
   };
-
   const Model = ({ model }) => {
-    const { scene } = useLoader(GLTFLoader, model.url);
+    const { scene } = useGLTF(model.url);
     const copiedScene = useMemo(() => scene.clone(), [scene]);
 
     return (
       <Suspense fallback={<p>...loading</p>}>
         <primitive object={copiedScene} />
+        <meshBasicMaterial
+          attach="material"
+          color="white"
+          roughness={0.3}
+          metalness={1.0}
+        />
       </Suspense>
     );
   };
 
-  const Plane = () => {
-    const texture = useLoader(
-      THREE.TextureLoader,
-      ground.url
-    );
+  const Ground = () => {
+    const texture = useTexture(ground.url);
     return (
-      <mesh rotation={[-Math.PI / 2, 0, 0]}>
-        <planeBufferGeometry attach="geometry" args={[20, 20]} />
+      <Plane args={[20, 20]} rotation-x={-Math.PI / 2}>
         <meshBasicMaterial attach="material" map={texture} toneMapped={false} />
-      </mesh>
+      </Plane>
     );
   };
 
-  const addNewPrimitiveModels = (data) => {
+  const handleSaveChange = () => {
+    localStorage.setItem("models", JSON.stringify(objModels));
+  };
+
+  const handleAddModel = (mesh) => {
+    setModels([...objModels, mesh]);
+  };
+
+  const addNewPrimitiveModels = (data, char) => {
     const obj = (
       <Obj
         key={Math.random()}
+        handleAddModel={handleAddModel}
         onClick={(e) => {
           setCurrentModel(obj);
         }}
+        model={data}
         isRotate={isRotate}
         onPointerMissed={() => setCurrentModel(null)}
-        defaultPos={[
-          Math.floor(Math.random() * 9),
-          0,
-          Math.floor(Math.random() * 9),
-        ]}
+        position={
+          char
+            ? char.position
+            : [Math.floor(Math.random() * 9), 0, Math.floor(Math.random() * 9)]
+        }
+        rotation={char ? char.rotation : [0, Math.floor(Math.random() * 9), 0]}
         setIsDragging={setIsDragging}
         floorPlane={floorPlane}
         mapSize={mapSize}
@@ -88,20 +125,24 @@ const DemoThree = () => {
         <Model model={data} />
       </Obj>
     );
-
     setPrimitiveModels([...primitiveModels, obj]);
   };
 
   return (
     <div style={{ height: "100vh", position: "relative" }}>
       <Canvas
-        style={{ backgroundColor: "#000" }}
+        style={{ backgroundColor: "#29252e" }}
         camera={{ position: [-15, 15, 15] }}
       >
-        <OrbitControls enabled={!isDragging} />
+        <OrbitControls maxPolarAngle={Math.PI / 2.2} enabled={!isDragging} />
         <ambientLight intensity={1.2} color={0xffffff} />
+        <spotLight
+          intensity={0.3}
+          color={0xffffff}
+          position={[100, 1000, 100]}
+        />
         <Stars />
-        <Plane />
+        <Ground />
         <Selection>
           <EffectComposer multisampling={8} autoClear={false}>
             <Outline
@@ -143,7 +184,7 @@ const DemoThree = () => {
         <div
           style={{
             position: "absolute",
-            top: '100%',
+            top: "100%",
             right: 0,
             backgroundColor: "rgba(251, 255, 125,0.7)",
             padding: "20px",
@@ -168,6 +209,9 @@ const DemoThree = () => {
           <button onClick={deleteCurrentItem}>Remove item</button>
           <button onClick={() => setIsRotate(!isRotate)}>
             {isRotate ? "Drag" : "Rotate"}
+          </button>
+          <button onClick={handleSaveChange}>
+            Save
           </button>
         </div>
       </div>
