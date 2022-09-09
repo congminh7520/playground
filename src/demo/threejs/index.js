@@ -20,14 +20,18 @@ const DemoThree = () => {
   const [isDragging, setIsDragging] = useState(false);
   const mapSize = [20, 20];
   const floorPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
-  const [primitiveModels, setPrimitiveModels] = useState([]);
   const [isRotate, setIsRotate] = useState(false);
   const [currentModel, setCurrentModel] = useState();
   const [ground, setGround] = useState(planes[0]);
 
+  // Obj array to render models
+  const [primitiveModels, setPrimitiveModels] = useState([]);
+  // Array to fetch models from first load
+  const [fetchModels, setFetchModels] = useState([]);
   // Store an array of mesh info need to submit to api
   const [objModels, setModels] = useState([]);
 
+  // Handle toggle isRotate for each 3d model item
   useEffect(() => {
     setPrimitiveModels(
       primitiveModels.map((model) => {
@@ -42,22 +46,26 @@ const DemoThree = () => {
     );
   }, [isRotate]);
 
-  useEffect(()=>{
-    const savedModels=JSON.parse(localStorage.getItem('models'))
-    savedModels?.map(model=>{
-      const data={
-        url:model.url,
-        thumb:model.thumb,
-        name:model.name
-      }
-      const char={
-        position:[model.position.x,model.position.y,model.position.z],
-        rotation:[0,model.rotation._y,0],
-      }
-      addNewPrimitiveModels(data,char)
-    })
-  },[])
+  useEffect(() => {
+    const savedModels = JSON.parse(localStorage.getItem("models"));
+    setFetchModels(savedModels);
+  }, []);
 
+  useEffect(() => {
+    fetchModels?.map((model) => {
+      const data = {
+        url: model.url,
+        thumb: model.thumb,
+        name: model.name,
+      };
+      const char = {
+        position: [model.position.x, model.position.y, model.position.z],
+        rotation: [0, model.rotation?._y, 0],
+      };
+      addNewPrimitiveModels(data, char);
+    });
+  }, [fetchModels]);
+  
   const deleteCurrentItem = () => {
     const model = primitiveModels.findIndex(
       (model) => model?.key === currentModel?.key
@@ -67,6 +75,7 @@ const DemoThree = () => {
     );
     setModels(objModels.filter((value, index) => index !== model));
   };
+
   const Model = ({ model }) => {
     const { scene } = useGLTF(model.url);
     const copiedScene = useMemo(() => scene.clone(), [scene]);
@@ -92,13 +101,13 @@ const DemoThree = () => {
       </Plane>
     );
   };
-
+  
   const handleSaveChange = () => {
-    localStorage.setItem("models", JSON.stringify(objModels));
+      localStorage.setItem("models", JSON.stringify(objModels));
   };
 
   const handleAddModel = (mesh) => {
-    setModels([...objModels, mesh]);
+    setModels(prevModels=>[...prevModels, mesh]);
   };
 
   const addNewPrimitiveModels = (data, char) => {
@@ -125,7 +134,7 @@ const DemoThree = () => {
         <Model model={data} />
       </Obj>
     );
-    setPrimitiveModels([...primitiveModels, obj]);
+    setPrimitiveModels((prevModels) => [...prevModels, obj]);
   };
 
   return (
@@ -210,9 +219,7 @@ const DemoThree = () => {
           <button onClick={() => setIsRotate(!isRotate)}>
             {isRotate ? "Drag" : "Rotate"}
           </button>
-          <button onClick={handleSaveChange}>
-            Save
-          </button>
+          <button onClick={handleSaveChange}>Save</button>
         </div>
       </div>
     </div>

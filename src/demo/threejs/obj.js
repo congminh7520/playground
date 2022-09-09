@@ -23,7 +23,13 @@ function Obj({
   let planeIntersectPoint = new THREE.Vector3();
 
   useEffect(() => {
-    handleAddModel({ ...mesh.current, ...model });
+    const { position, rotation, scale } = mesh.current;
+    handleAddModel({
+      position,
+      rotation,
+      scale,
+      ...model,
+    });
   }, [mesh]);
 
   const [spring, api] = useSpring(() => ({
