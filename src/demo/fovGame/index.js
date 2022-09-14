@@ -1,23 +1,28 @@
 import { Physics } from "@react-three/cannon";
 import { Sky, Stars, Stats } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useKeyboardInput } from "../../hooks/useKeyboardInput";
 import Cube from "./Cube";
 import { nanoid } from "nanoid";
 import Ground from "./Ground";
 import Player from "./Player";
 import { useInterval } from "../../hooks/useInterval";
+import { message } from "antd";
 
 const FovGame = () => {
   const [cubes, setCubes] = useState(
     JSON.parse(localStorage.getItem("world")) || []
   );
-  const { texture, fov } = useKeyboardInput();
+  const { texture } = useKeyboardInput();
 
   useInterval(() => {
     localStorage.setItem("world", JSON.stringify(cubes));
   }, 5000);
+
+  useEffect(() => {
+    message.info(`Spawning ${texture}`);
+  }, [texture]);
 
   const addCube = (x, y, z) =>
     setCubes([...cubes, { key: nanoid(), pos: [x, y, z], texture }]);

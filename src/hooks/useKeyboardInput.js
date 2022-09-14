@@ -44,7 +44,6 @@ export const useKeyboardInput = () => {
       }
       if (textureByKey(e.key)) {
         setTexture(textureByKey(e.key));
-        message.info(`Using ${textureByKey(e.key)}`);
       }
       if (e.key === "v") setFov(!fov);
     };

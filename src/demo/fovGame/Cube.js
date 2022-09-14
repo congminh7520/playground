@@ -1,12 +1,10 @@
 import { useBox } from "@react-three/cannon";
-import { memo } from "react";
 import { useState } from "react";
 import * as textures from "./CubeTextures";
 
 const Cube = ({ position, addCube, texture, removeCube, usingCube }) => {
   const [hover, setHover] = useState(null);
   const color = texture === "glass" ? "#ebf2ff" : "white";
-
   const [ref] = useBox(() => ({
     type: "Static",
     position,
@@ -57,30 +55,16 @@ const Cube = ({ position, addCube, texture, removeCube, usingCube }) => {
         }
       }}
     >
-      {[...Array(6)].map((_, index) => {
-        return (
-          <meshStandardMaterial
-            attach="material"
-            map={textures[texture]}
-            key={index}
-            color={hover != null ? "gray" : color}
-            opacity={texture === "glass" ? 0.7 : 1}
-            transparent={true}
-          />
-        );
-      })}
+      <meshStandardMaterial
+        attach="material"
+        map={textures[texture]}
+        color={hover != null ? "gray" : color}
+        opacity={texture === "glass" ? 0.7 : 1}
+        transparent={true}
+      />
       <boxBufferGeometry attach="geometry" />
     </mesh>
   );
 };
 
-function equalProps(prevProps, nextProps) {
-  const equalPosition =
-    prevProps.position.x === nextProps.position.x &&
-    prevProps.position.y === nextProps.position.y &&
-    prevProps.position.z === nextProps.position.z;
-
-  return equalPosition && prevProps.texture === nextProps.texture;
-}
-
-export default memo(Cube,equalProps);
+export default Cube;
