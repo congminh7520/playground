@@ -15,6 +15,7 @@ import {
   Outline,
   Selection,
 } from "@react-three/postprocessing";
+import { useInterval } from "../../hooks/useInterval";
 
 const DemoThree = () => {
   const [isDragging, setIsDragging] = useState(false);
@@ -46,6 +47,10 @@ const DemoThree = () => {
     );
   }, [isRotate]);
 
+  useInterval(() => {
+    handleSaveChange();
+  }, 5000);
+
   useEffect(() => {
     const savedModels = JSON.parse(localStorage.getItem("models"));
     setFetchModels(savedModels);
@@ -65,7 +70,7 @@ const DemoThree = () => {
       addNewPrimitiveModels(data, char);
     });
   }, [fetchModels]);
-  
+
   const deleteCurrentItem = () => {
     const model = primitiveModels.findIndex(
       (model) => model?.key === currentModel?.key
@@ -101,13 +106,13 @@ const DemoThree = () => {
       </Plane>
     );
   };
-  
+
   const handleSaveChange = () => {
-      localStorage.setItem("models", JSON.stringify(objModels));
+    localStorage.setItem("models", JSON.stringify(objModels));
   };
 
   const handleAddModel = (mesh) => {
-    setModels(prevModels=>[...prevModels, mesh]);
+    setModels((prevModels) => [...prevModels, mesh]);
   };
 
   const addNewPrimitiveModels = (data, char) => {

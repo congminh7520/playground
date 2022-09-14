@@ -16,7 +16,7 @@ const actionByKey = (key) => {
 
 const textureByKey = (key) => {
   const keys = {
-    0: "none",
+    0: "axe",
     1: "wood",
     2: "dirt",
     3: "glass",
@@ -35,7 +35,7 @@ export const useKeyboardInput = () => {
     sprint: false,
     jump: false,
   });
-  const [texture, setTexture] = useState("none");
+  const [texture, setTexture] = useState("axe");
   const [fov, setFov] = useState(true);
   useEffect(() => {
     const handleKeyDown = (e) => {

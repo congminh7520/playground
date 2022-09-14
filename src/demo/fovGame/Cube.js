@@ -25,7 +25,7 @@ const Cube = ({ position, addCube, texture, removeCube, usingCube }) => {
         e.stopPropagation();
         const clickedFace = Math.floor(e.faceIndex / 2);
         const { x, y, z } = ref.current.position;
-        if (usingCube === "none") {
+        if (usingCube === "axe") {
           removeCube(x, y, z);
         } else {
           if (clickedFace === 0) {

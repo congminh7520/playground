@@ -1,5 +1,5 @@
 import { Physics } from "@react-three/cannon";
-import { Sky, Stars, Stats } from "@react-three/drei";
+import { OrbitControls, Sky, Stars, Stats } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { useState, useEffect } from "react";
 import { useKeyboardInput } from "../../hooks/useKeyboardInput";
@@ -36,13 +36,16 @@ const FovGame = () => {
   };
 
   return (
-    <Canvas
-      gl={{ antialias: true, powerPreference: "high-performance" }}
-      shadows
-      frameloop="demand"
-    >
+    <Canvas camera={{ position: [-15, 15, 15] }}>
       <Stats />
-      <Stars />
+      <Stars
+        radius={300}
+        depth={60}
+        count={2000}
+        fade
+        factor={7}
+        saturation={0}
+      />
       <Sky sunPosition={[100, 20, 100]} />
       <ambientLight intensity={0.25} />
       <pointLight castShadow intensity={0.7} position={[100, 100, 100]} />

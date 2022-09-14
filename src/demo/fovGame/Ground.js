@@ -31,7 +31,7 @@ const Ground = ({ addCube, cubeTexture, ...props }) => {
         const [x, y, z] = Object.values(e.point).map((coord) =>
           Math.ceil(coord)
         );
-        cubeTexture !== "none" && addCube(x, y, z);
+        cubeTexture !== "axe" && addCube(x, y, z);
       }}
       ref={ref}
       receiveShadow
