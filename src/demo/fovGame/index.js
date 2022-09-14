@@ -36,7 +36,7 @@ const FovGame = () => {
   };
 
   return (
-    <Canvas camera={{ position: [-15, 15, 15] }}>
+    <Canvas shadows>
       <Stats />
       <Stars
         radius={300}

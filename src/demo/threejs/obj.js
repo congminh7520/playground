@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { useDrag } from "@use-gesture/react";
 import { animated, useSpring } from "@react-spring/three";
 import * as THREE from "three";
-import { Select } from "@react-three/postprocessing";
+import { Grid, Select } from "@react-three/postprocessing";
 
 function Obj({
   mapSize,
@@ -81,6 +81,7 @@ function Obj({
         castShadow
       >
         {children}
+        <Grid size={20} />
       </animated.mesh>
     </Select>
   );

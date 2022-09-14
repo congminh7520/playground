@@ -155,7 +155,14 @@ const DemoThree = () => {
           color={0xffffff}
           position={[100, 1000, 100]}
         />
-        <Stars />
+        <Stars
+          radius={300}
+          depth={60}
+          count={2000}
+          fade
+          factor={7}
+          saturation={0}
+        />
         <Ground />
         <Selection>
           <EffectComposer multisampling={8} autoClear={false}>
