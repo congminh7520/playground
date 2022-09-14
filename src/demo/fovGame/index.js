@@ -1,5 +1,5 @@
 import { Physics } from "@react-three/cannon";
-import { Sky, Stats } from "@react-three/drei";
+import { Sky, Stars, Stats } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { useState } from "react";
 import { useKeyboardInput } from "../../hooks/useKeyboardInput";
@@ -10,7 +10,9 @@ import Player from "./Player";
 import { useInterval } from "../../hooks/useInterval";
 
 const FovGame = () => {
-  const [cubes, setCubes] = useState(JSON.parse(localStorage.getItem('world')) || []);
+  const [cubes, setCubes] = useState(
+    JSON.parse(localStorage.getItem("world")) || []
+  );
   const { texture, fov } = useKeyboardInput();
 
   useInterval(() => {
@@ -18,7 +20,7 @@ const FovGame = () => {
   }, 5000);
 
   const addCube = (x, y, z) =>
-    setCubes([...cubes, { pos: [x, y, z], texture }]);
+    setCubes([...cubes, { key: nanoid(), pos: [x, y, z], texture }]);
 
   const removeCube = (x, y, z) => {
     const filteredCubes = cubes.filter((cube) => {
@@ -35,6 +37,7 @@ const FovGame = () => {
       frameloop="demand"
     >
       <Stats />
+      <Stars />
       <Sky sunPosition={[100, 20, 100]} />
       <ambientLight intensity={0.25} />
       <pointLight castShadow intensity={0.7} position={[100, 100, 100]} />
@@ -45,12 +48,12 @@ const FovGame = () => {
           position={[0, 0.5, 0]}
         />
         <Player position={[0, 2, 10]} />
-        {cubes.map((cube, index) => (
+        {cubes.map((cube) => (
           <Cube
             addCube={addCube}
             removeCube={removeCube}
             usingCube={texture}
-            key={nanoid()}
+            key={cube.key}
             position={cube.pos}
             texture={cube.texture}
           />

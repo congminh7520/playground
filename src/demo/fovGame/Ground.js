@@ -1,6 +1,11 @@
 import { usePlane } from "@react-three/cannon";
 import { useMemo } from "react";
-import { RepeatWrapping, TextureLoader } from "three";
+import {
+  LinearMipMapLinearFilter,
+  NearestFilter,
+  RepeatWrapping,
+  TextureLoader,
+} from "three";
 import grass from "../../images/grass.jpg";
 
 const Ground = ({ addCube, cubeTexture, ...props }) => {
@@ -12,6 +17,12 @@ const Ground = ({ addCube, cubeTexture, ...props }) => {
     t.repeat.set(100, 100);
     return t;
   }, []);
+
+  texture.magFilter = NearestFilter;
+  texture.minFilter = LinearMipMapLinearFilter;
+  texture.wrapS = RepeatWrapping;
+  texture.wrapT = RepeatWrapping;
+  texture.repeat.set(100, 100);
 
   return (
     <mesh
