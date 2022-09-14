@@ -9,6 +9,7 @@ import Ground from "./Ground";
 import Player from "./Player";
 import { useInterval } from "../../hooks/useInterval";
 import { message } from "antd";
+import Crosshair from "./Crosshair";
 
 const FovGame = () => {
   const [cubes, setCubes] = useState(
@@ -36,38 +37,41 @@ const FovGame = () => {
   };
 
   return (
-    <Canvas shadows>
-      <Stats />
-      <Stars
-        radius={300}
-        depth={60}
-        count={2000}
-        fade
-        factor={7}
-        saturation={0}
-      />
-      <Sky sunPosition={[100, 20, 100]} />
-      <ambientLight intensity={0.25} />
-      <pointLight castShadow intensity={0.7} position={[100, 100, 100]} />
-      <Physics gravity={[0, -30, 0]}>
-        <Ground
-          cubeTexture={texture}
-          addCube={addCube}
-          position={[0, 0.5, 0]}
+    <div style={{ height: "100%" }}>
+      <Crosshair />
+      <Canvas shadows>
+        <Stats />
+        <Stars
+          radius={300}
+          depth={60}
+          count={2000}
+          fade
+          factor={7}
+          saturation={0}
         />
-        <Player position={[0, 2, 10]} />
-        {cubes.map((cube) => (
-          <Cube
+        <Sky sunPosition={[100, 20, 100]} />
+        <ambientLight intensity={0.25} />
+        <pointLight castShadow intensity={0.7} position={[100, 100, 100]} />
+        <Physics gravity={[0, -30, 0]}>
+          <Ground
+            cubeTexture={texture}
             addCube={addCube}
-            removeCube={removeCube}
-            usingCube={texture}
-            key={cube.key}
-            position={cube.pos}
-            texture={cube.texture}
+            position={[0, 0.5, 0]}
           />
-        ))}
-      </Physics>
-    </Canvas>
+          <Player position={[0, 2, 10]} />
+          {cubes.map((cube) => (
+            <Cube
+              addCube={addCube}
+              removeCube={removeCube}
+              usingCube={texture}
+              key={cube.key}
+              position={cube.pos}
+              texture={cube.texture}
+            />
+          ))}
+        </Physics>
+      </Canvas>
+    </div>
   );
 };
 

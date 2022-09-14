@@ -18,7 +18,7 @@ import {
 
 const CityPlannerTool = () => {
   const [models, setModels] = useState(
-    JSON.parse(localStorage.getItem("world") || [])
+    JSON.parse(localStorage.getItem("world")) || []
   );
   const floorPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
   const [spawningModel, setSpawningModel] = useState("");
