@@ -1,5 +1,5 @@
 import { Physics } from "@react-three/cannon";
-import { OrbitControls, Sky, Stars } from "@react-three/drei";
+import { OrbitControls, Stars } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { nanoid } from "nanoid";
 import { useState } from "react";
@@ -21,6 +21,8 @@ const CityPlannerTool = () => {
     JSON.parse(localStorage.getItem("world")) || []
   );
   const floorPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
+  const [rotateValue, setRotateValue] = useState(0);
+  const [scaleValue, setScaleValue] = useState(1);
   const [spawningModel, setSpawningModel] = useState("");
   const [currentPos, setCurrentPos] = useState([]);
   const [isDragging, setIsDragging] = useState(false);
@@ -58,7 +60,10 @@ const CityPlannerTool = () => {
     return models.map((model) => (
       <Model
         key={model.key}
+        rotateValue={rotateValue}
         floorPlane={floorPlane}
+        currentPos={currentPos}
+        scaleValue={scaleValue}
         setIsDragging={setIsDragging}
         setCurrentPos={setCurrentPos}
         meshTexture={model.texture}
@@ -76,6 +81,10 @@ const CityPlannerTool = () => {
     >
       <AssetMenu setSpawningModel={setSpawningModel} addModel={addModel} />
       <ActionMenu
+        rotateValue={rotateValue}
+        scaleValue={scaleValue}
+        setScaleValue={setScaleValue}
+        setRotateValue={setRotateValue}
         toggleMapGrid={toggleMapGrid}
         currentPos={currentPos}
         removeModel={removeModel}
