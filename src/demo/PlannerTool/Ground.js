@@ -25,12 +25,22 @@ const Ground = ({ texture, showMapGrid, ...props }) => {
   groundTexture.wrapT = RepeatWrapping;
   groundTexture.repeat.set(40, 40);
 
+  const XYPlane = () => (
+    <Plane
+      args={[40, 40, 40, 40]}
+      rotation={[-Math.PI / 2, 0, 0]}
+    >
+      <meshStandardMaterial attach="material" color="#dce2fa" wireframe />
+    </Plane>
+  );
+
   return (
     <group>
       <mesh ref={ref} receiveShadow>
         <planeBufferGeometry attach="geometry" args={[40, 40]} />
         <meshStandardMaterial map={groundTexture} attach="material" />
       </mesh>
+      <XYPlane />
       {showMapGrid && (
         <gridHelper
           args={[40, 40]}

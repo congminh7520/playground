@@ -24,6 +24,9 @@ const ActionMenu = ({
     <div
       style={{
         position: "fixed",
+        width: "100%",
+        display: "flex",
+        justifyContent: "center",
         top: 0,
         right: 0,
         zIndex: 999,
@@ -36,36 +39,39 @@ const ActionMenu = ({
       >
         remove
       </Button>
-      <Button
-        onClick={() => setIsScale(!isScale)}
-        type="primary"
-        disabled={!currentPos.length > 0}
-      >
-        scale
-      </Button>
-      {isScale && (
-        <Slider
-          min={1}
-          max={5}
-          onChange={(value) => setScaleValue(value)}
-          value={typeof scaleValue === "number" ? scaleValue : 1}
-        />
-      )}
-      <Button
-        onClick={() => setIsRotate(!isRotate)}
-        type="warning"
-        disabled={!currentPos.length > 0}
-      >
-        rotate
-      </Button>
-      {isRotate && (
-        <Slider
-          min={0}
-          max={360}
-          onChange={(value) => setRotateValue(value)}
-          value={typeof rotateValue === "number" ? rotateValue : 0}
-        />
-      )}
+      <div>
+        <Button
+          onClick={() => setIsScale(!isScale)}
+          type="primary"
+          disabled={!currentPos.length > 0}
+        >
+          scale
+        </Button>
+        {isScale && (
+          <Slider
+            min={1}
+            max={5}
+            onChange={(value) => setScaleValue(value)}
+            value={typeof scaleValue === "number" ? scaleValue : 1}
+          />
+        )}
+      </div>
+      <div>
+        <Button
+          onClick={() => setIsRotate(!isRotate)}
+          disabled={!currentPos.length > 0}
+        >
+          rotate
+        </Button>
+        {isRotate && (
+          <Slider
+            min={0}
+            max={360}
+            onChange={(value) => setRotateValue(value)}
+            value={typeof rotateValue === "number" ? rotateValue : 0}
+          />
+        )}
+      </div>
       <Button type="warning" onClick={toggleMapGrid}>
         Toggle map grid
       </Button>

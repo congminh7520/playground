@@ -15,6 +15,7 @@ import {
   Outline,
   Selection,
 } from "@react-three/postprocessing";
+import { useEffect } from "react";
 
 const CityPlannerTool = () => {
   const [models, setModels] = useState(
@@ -28,17 +29,22 @@ const CityPlannerTool = () => {
   const [isDragging, setIsDragging] = useState(false);
   const [showMapGrid, setShowMapGrid] = useState(false);
 
-  useInterval(() => {
+  useEffect(()=>{
+    handleSaveWorld()
+  },[models])
+
+  const handleSaveWorld = () => {
     localStorage.setItem("world", JSON.stringify(models));
-  }, 5000);
+  };
 
   const toggleMapGrid = () => setShowMapGrid(!showMapGrid);
-
   const addModel = (x, y, z) => {
     setModels([
       ...models,
       {
         pos: [x, y, z],
+        rotation: [0, 0, 0],
+        scale: [1, 1, 1],
         key: nanoid(),
         texture: spawningModel,
       },
@@ -60,6 +66,12 @@ const CityPlannerTool = () => {
     return models.map((model) => (
       <Model
         key={model.key}
+        handleSaveWorld={handleSaveWorld}
+        setModels={setModels}
+        modelId={model.key}
+        models={models}
+        setRotate={setRotateValue}
+        setScale={setScaleValue}
         rotateValue={rotateValue}
         floorPlane={floorPlane}
         currentPos={currentPos}
@@ -67,6 +79,8 @@ const CityPlannerTool = () => {
         setIsDragging={setIsDragging}
         setCurrentPos={setCurrentPos}
         meshTexture={model.texture}
+        rotation={model.rotation}
+        scale={model.scale}
         position={model.pos}
       />
     ));
