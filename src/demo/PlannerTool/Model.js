@@ -1,4 +1,4 @@
-import { useBox } from "@react-three/cannon";
+import { useBox, useSphere } from "@react-three/cannon";
 import { useGLTF } from "@react-three/drei";
 import { useState } from "react";
 import { useMemo } from "react";
@@ -6,7 +6,6 @@ import * as THREE from "three";
 import { useDrag } from "@use-gesture/react";
 import { Select } from "@react-three/postprocessing";
 import { useEffect } from "react";
-import { useRef } from "react";
 
 const Model = ({
   position,
@@ -24,6 +23,7 @@ const Model = ({
   modelId,
   models,
   setModels,
+  isPreview,
   handleSaveWorld,
 }) => {
   const { scene } = useGLTF(meshTexture);
@@ -34,7 +34,7 @@ const Model = ({
   const [modelRotate, setModelRotate] = useState(rotation);
 
   let planeIntersectPoint = new THREE.Vector3();
-  const [ref, api] = useBox(() => ({
+  const [ref, api] = useSphere(() => ({
     mass: 1,
     type: "Static",
     position,
@@ -100,30 +100,41 @@ const Model = ({
 
   return (
     <Select enabled={axesHelper}>
-      <mesh
-        {...bind()}
-        ref={ref}
-        onClick={() => {
-          setRotate(modelRotate[1] / (Math.PI / 180));
-          setScale(modelScale[0]);
-          setAxesHelper(true);
-          setCurrentModel(modelId);
-        }}
-        onPointerMissed={() => {
-          setAxesHelper(false);
-          setCurrentModel(null);
-          handleSaveWorld();
-        }}
-        castShadow
-      >
-        <primitive object={copiedScene} />
-        {axesHelper && <axesHelper args={[2, 2, 2]} />}
-        <meshStandardMaterial
-          attach="material"
-          metalness={0.4}
-          roughness={0.7}
-        />
-      </mesh>
+      {isPreview ? (
+        <mesh castShadow>
+          <primitive object={copiedScene} />
+          <meshStandardMaterial
+            attach="material"
+            metalness={0.4}
+            roughness={0.7}
+          />
+        </mesh>
+      ) : (
+        <mesh
+          {...bind()}
+          ref={ref}
+          onClick={() => {
+            setRotate(modelRotate[1] / (Math.PI / 180));
+            setScale(modelScale[0]);
+            setAxesHelper(true);
+            setCurrentModel(modelId);
+          }}
+          onPointerMissed={() => {
+            setAxesHelper(false);
+            setCurrentModel(null);
+            handleSaveWorld();
+          }}
+          castShadow
+        >
+          <primitive object={copiedScene} />
+          {axesHelper && <axesHelper args={[3, 3, 3]} />}
+          <meshStandardMaterial
+            attach="material"
+            metalness={0.4}
+            roughness={0.7}
+          />
+        </mesh>
+      )}
     </Select>
   );
 };

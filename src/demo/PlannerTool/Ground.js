@@ -26,27 +26,19 @@ const Ground = ({ texture, showMapGrid, ...props }) => {
   groundTexture.repeat.set(40, 40);
 
   const XYPlane = () => (
-    <Plane
-      args={[40, 40, 40, 40]}
-      rotation={[-Math.PI / 2, 0, 0]}
-    >
+    <Plane args={[40, 40, 40, 40]} rotation={[-Math.PI / 2, 0, 0]}>
       <meshStandardMaterial attach="material" color="#dce2fa" wireframe />
     </Plane>
   );
 
   return (
-    <group>
-      <mesh ref={ref} receiveShadow>
+    <group receiveShadow>
+      <mesh ref={ref}>
         <planeBufferGeometry attach="geometry" args={[40, 40]} />
         <meshStandardMaterial map={groundTexture} attach="material" />
       </mesh>
       <XYPlane />
-      {showMapGrid && (
-        <gridHelper
-          args={[40, 40]}
-          position={[0, 0.5, 0]}
-        />
-      )}
+      {showMapGrid && <gridHelper args={[40, 40]} position={[0, 0.5, 0]} />}
     </group>
   );
 };

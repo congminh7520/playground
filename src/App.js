@@ -9,6 +9,7 @@ function App() {
   return (
     <div style={{ height: "100vh" }}>
       <CityPlannerTool />
+      {/* <FovGame/> */}
     </div>
   );
 }

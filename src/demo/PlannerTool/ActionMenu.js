@@ -9,6 +9,7 @@ const ActionMenu = ({
   toggleMapGrid,
   scaleValue,
   setScaleValue,
+  togglePreview,
 }) => {
   const [isRotate, setIsRotate] = useState(false);
   const [isScale, setIsScale] = useState(false);
@@ -32,11 +33,7 @@ const ActionMenu = ({
         zIndex: 999,
       }}
     >
-      <Button
-        type="danger"
-        disabled={!currentModel}
-        onClick={removeModel}
-      >
+      <Button type="danger" disabled={!currentModel} onClick={removeModel}>
         remove
       </Button>
       <div>
@@ -57,10 +54,7 @@ const ActionMenu = ({
         )}
       </div>
       <div>
-        <Button
-          onClick={() => setIsRotate(!isRotate)}
-          disabled={!currentModel}
-        >
+        <Button onClick={() => setIsRotate(!isRotate)} disabled={!currentModel}>
           rotate
         </Button>
         {isRotate && (
@@ -72,8 +66,9 @@ const ActionMenu = ({
           />
         )}
       </div>
-      <Button type="warning" onClick={toggleMapGrid}>
-        Toggle map grid
+      <Button onClick={toggleMapGrid}>Toggle map grid</Button>
+      <Button onClick={togglePreview} disabled={currentModel}>
+        Preview
       </Button>
     </div>
   );

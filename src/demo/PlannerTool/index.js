@@ -1,5 +1,5 @@
 import { Physics } from "@react-three/cannon";
-import { OrbitControls, Stars } from "@react-three/drei";
+import { OrbitControls, Sky, Stars } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { nanoid } from "nanoid";
 import { useState } from "react";
@@ -8,6 +8,7 @@ import AssetMenu from "./AssetMenu";
 import Ground from "./Ground";
 import Model from "./Model";
 import { useInterval } from "../../hooks/useInterval";
+import Crosshair from "./Crosshair";
 import Grass from "../../images/grass.jpg";
 import * as THREE from "three";
 import {
@@ -16,6 +17,7 @@ import {
   Selection,
 } from "@react-three/postprocessing";
 import { useEffect } from "react";
+import Player from "./Player";
 
 const CityPlannerTool = () => {
   const [models, setModels] = useState(
@@ -25,19 +27,21 @@ const CityPlannerTool = () => {
   const [rotateValue, setRotateValue] = useState(0);
   const [scaleValue, setScaleValue] = useState(1);
   const [spawningModel, setSpawningModel] = useState("");
-  const [currentModel,setCurrentModel] = useState()
+  const [currentModel, setCurrentModel] = useState();
+  const [isPreview, setIsPreview] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [showMapGrid, setShowMapGrid] = useState(false);
 
-  useEffect(()=>{
-    handleSaveWorld()
-  },[models])
+  useEffect(() => {
+    handleSaveWorld();
+  }, [models]);
 
   const handleSaveWorld = () => {
     localStorage.setItem("world", JSON.stringify(models));
   };
 
   const toggleMapGrid = () => setShowMapGrid(!showMapGrid);
+  const togglePreview = () => setIsPreview(!isPreview);
   const addModel = (x, y, z) => {
     setModels([
       ...models,
@@ -61,6 +65,7 @@ const CityPlannerTool = () => {
     return models.map((model) => (
       <Model
         key={model.key}
+        isPreview={isPreview}
         handleSaveWorld={handleSaveWorld}
         setModels={setModels}
         modelId={model.key}
@@ -90,6 +95,7 @@ const CityPlannerTool = () => {
     >
       <AssetMenu setSpawningModel={setSpawningModel} addModel={addModel} />
       <ActionMenu
+        togglePreview={togglePreview}
         rotateValue={rotateValue}
         scaleValue={scaleValue}
         setScaleValue={setScaleValue}
@@ -98,13 +104,16 @@ const CityPlannerTool = () => {
         currentModel={currentModel}
         removeModel={removeModel}
       />
-
+      {isPreview && <Crosshair />}
       <Canvas
         camera={{ position: [20, 20, 20] }}
         style={{ backgroundColor: "black" }}
         shadows
       >
-        <OrbitControls enabled={!isDragging} maxPolarAngle={Math.PI / 2.2} />
+        {isPreview && <Sky sunPosition={[100, 20, 100]} />}
+        {!isPreview && (
+          <OrbitControls enabled={!isDragging} maxPolarAngle={Math.PI / 2.2} />
+        )}
         <ambientLight intensity={0.25} />
         <pointLight castShadow intensity={0.7} position={[100, 100, 100]} />
         <Stars
@@ -116,6 +125,7 @@ const CityPlannerTool = () => {
           saturation={0}
         />
         <Physics gravity={[0, -30, 0]}>
+          <Player isPreview={isPreview} position={[0, 3, 10]} />
           <Selection>
             <EffectComposer multisampling={8} autoClear={false}>
               <Outline
