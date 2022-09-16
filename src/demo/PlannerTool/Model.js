@@ -11,10 +11,10 @@ import { useRef } from "react";
 const Model = ({
   position,
   meshTexture,
-  setCurrentPos,
+  setCurrentModel,
   rotateValue,
   setIsDragging,
-  currentPos,
+  currentModel,
   scaleValue,
   rotation,
   scale,
@@ -30,37 +30,28 @@ const Model = ({
   const [pos, setPos] = useState(position ? position : [0, 0, 0]);
   const [axesHelper, setAxesHelper] = useState(false);
   const copiedScene = useMemo(() => scene.clone(), [scene]);
+  const [modelScale, setModelScale] = useState(scale);
+  const [modelRotate, setModelRotate] = useState(rotation);
 
   let planeIntersectPoint = new THREE.Vector3();
   const [ref, api] = useBox(() => ({
     mass: 1,
     type: "Static",
     position,
-    rotation,
+    rotation: modelRotate,
   }));
-
-  const _pos = useRef(position);
-  useEffect(
-    () => api.position.subscribe((v) => (_pos.current = v)),
-    [api.position]
-  );
-  const _rotation = useRef(rotation);
-  useEffect(
-    () =>
-      api.rotation.subscribe((v) => (_rotation.current = [v[0], v[1], v[2]])),
-    [api.rotation]
-  );
 
   useEffect(() => {
     models.map((model) => {
       if (model.key === modelId) {
-        model.pos = _pos.current;
-        model.rotation = _rotation.current;
+        model.pos = pos;
+        model.rotation = modelRotate;
+        model.scale = modelScale;
       }
     });
     setModels(models);
-  }, [_pos.current, _rotation.current]);
-  
+  }, [pos, modelScale, modelRotate]);
+
   useEffect(() => {
     ref.current.scale.x = scale[0];
     ref.current.scale.y = scale[1];
@@ -68,19 +59,21 @@ const Model = ({
   }, [scale]);
 
   useEffect(() => {
-    const { x, y, z } = ref.current.position;
-    if (x === currentPos[0] && y === currentPos[1] && z === currentPos[2])
-      api.rotation.set(0, (rotateValue * Math.PI) / 180, 0);
-  }, [rotateValue]);
+    if (modelId === currentModel) {
+      const rotateAngle = [0, (rotateValue * Math.PI) / 180, 0];
+      api.rotation.set(rotateAngle[0], rotateAngle[1], rotateAngle[2]);
+      setModelRotate(rotateAngle);
+    }
+  }, [rotateValue, currentModel]);
 
   useEffect(() => {
-    const { x, y, z } = ref.current.position;
-    if (x === currentPos[0] && y === currentPos[1] && z === currentPos[2]) {
+    if (modelId === currentModel) {
       ref.current.scale.x = scaleValue;
       ref.current.scale.y = scaleValue;
       ref.current.scale.z = scaleValue;
+      setModelScale([scaleValue, scaleValue, scaleValue]);
     }
-  }, [scaleValue]);
+  }, [scaleValue, currentModel]);
 
   const bind = useDrag(({ active, timeStamp, event }) => {
     if (active) {
@@ -110,14 +103,15 @@ const Model = ({
       <mesh
         {...bind()}
         ref={ref}
-        onClick={(e) => {
-          const { x, y, z } = ref.current.position;
+        onClick={() => {
+          setRotate(modelRotate[1] / (Math.PI / 180));
+          setScale(modelScale[0]);
           setAxesHelper(true);
-          setCurrentPos([x, y, z]);
+          setCurrentModel(modelId);
         }}
         onPointerMissed={() => {
           setAxesHelper(false);
-          setCurrentPos([]);
+          setCurrentModel(null);
           handleSaveWorld();
         }}
         castShadow

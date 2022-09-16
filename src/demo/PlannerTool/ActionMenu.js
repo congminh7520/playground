@@ -5,7 +5,7 @@ const ActionMenu = ({
   removeModel,
   rotateValue,
   setRotateValue,
-  currentPos,
+  currentModel,
   toggleMapGrid,
   scaleValue,
   setScaleValue,
@@ -14,11 +14,11 @@ const ActionMenu = ({
   const [isScale, setIsScale] = useState(false);
 
   useEffect(() => {
-    if (currentPos.length === 0) {
+    if (!currentModel) {
       setIsRotate(false);
       setIsScale(false);
     }
-  }, [currentPos]);
+  }, [currentModel]);
 
   return (
     <div
@@ -34,7 +34,7 @@ const ActionMenu = ({
     >
       <Button
         type="danger"
-        disabled={!currentPos.length > 0}
+        disabled={!currentModel}
         onClick={removeModel}
       >
         remove
@@ -43,7 +43,7 @@ const ActionMenu = ({
         <Button
           onClick={() => setIsScale(!isScale)}
           type="primary"
-          disabled={!currentPos.length > 0}
+          disabled={!currentModel}
         >
           scale
         </Button>
@@ -59,7 +59,7 @@ const ActionMenu = ({
       <div>
         <Button
           onClick={() => setIsRotate(!isRotate)}
-          disabled={!currentPos.length > 0}
+          disabled={!currentModel}
         >
           rotate
         </Button>

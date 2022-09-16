@@ -25,7 +25,7 @@ const CityPlannerTool = () => {
   const [rotateValue, setRotateValue] = useState(0);
   const [scaleValue, setScaleValue] = useState(1);
   const [spawningModel, setSpawningModel] = useState("");
-  const [currentPos, setCurrentPos] = useState([]);
+  const [currentModel,setCurrentModel] = useState()
   const [isDragging, setIsDragging] = useState(false);
   const [showMapGrid, setShowMapGrid] = useState(false);
 
@@ -52,14 +52,9 @@ const CityPlannerTool = () => {
   };
 
   const removeModel = () => {
-    const filteredModel = models.filter((model) => {
-      const [_x, _y, _z] = model.pos;
-      return (
-        _x !== currentPos[0] || _y !== currentPos[1] || _z !== currentPos[2]
-      );
-    });
+    const filteredModel = models.filter((model) => model.key !== currentModel);
     setModels(filteredModel);
-    setCurrentPos([]);
+    setCurrentModel(null);
   };
 
   const renderModels = () => {
@@ -74,10 +69,10 @@ const CityPlannerTool = () => {
         setScale={setScaleValue}
         rotateValue={rotateValue}
         floorPlane={floorPlane}
-        currentPos={currentPos}
+        currentModel={currentModel}
         scaleValue={scaleValue}
         setIsDragging={setIsDragging}
-        setCurrentPos={setCurrentPos}
+        setCurrentModel={setCurrentModel}
         meshTexture={model.texture}
         rotation={model.rotation}
         scale={model.scale}
@@ -100,7 +95,7 @@ const CityPlannerTool = () => {
         setScaleValue={setScaleValue}
         setRotateValue={setRotateValue}
         toggleMapGrid={toggleMapGrid}
-        currentPos={currentPos}
+        currentModel={currentModel}
         removeModel={removeModel}
       />
 
