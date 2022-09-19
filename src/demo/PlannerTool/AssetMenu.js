@@ -1,24 +1,33 @@
+import { Typography } from "antd";
 import { models } from "../threejs/model";
 
-const AssetMenu = ({ setSpawningModel,addModel }) => {
+const AssetMenu = ({ setSpawningModel, addModel }) => {
   const renderAssets = () => {
     return models?.map((model, index) => {
       return (
         <div
-          draggable="true"
           onPointerDown={(e) => {
             e.stopPropagation();
             setSpawningModel(model.url);
           }}
           key={index}
           style={{
-            padding: 20,
+            width: 50,
+            height: 50,
             cursor: "pointer",
+            backgroundColor: "#fff",
+            borderRadius: 8,
           }}
         >
           <img
-            style={{ width: 50, height: 50 }}
-            onClick={()=>addModel(Math.floor(Math.random() * 9), 0.5, Math.floor(Math.random() * 9))}
+            style={{ width: "100%", height: "100%" }}
+            onClick={() =>
+              addModel(
+                Math.floor(Math.random() * 9),
+                0.5,
+                Math.floor(Math.random() * 9)
+              )
+            }
             src={model.thumb}
             name={model.name}
           />
@@ -30,14 +39,26 @@ const AssetMenu = ({ setSpawningModel,addModel }) => {
   return (
     <div
       style={{
-        position: "fixed",
-        background: "white",
-        top: 0,
-        left: 0,
-        zIndex: 999,
+        backgroundColor: "#001529",
+        padding: 20,
+        minWidth: 300,
+        height:'100%'
       }}
     >
-      {renderAssets()}
+      <Typography.Title style={{ color: "white", marginBottom: 16 }} level={3}>
+        Assets pack
+      </Typography.Title>
+      <div
+        style={{
+          display: "flex",
+          flexWrap: "wrap",
+          gap: 12,
+          overflow:'auto',
+          height:'100%'
+        }}
+      >
+        {renderAssets()}
+      </div>
     </div>
   );
 };

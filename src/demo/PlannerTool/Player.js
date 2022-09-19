@@ -28,9 +28,9 @@ const Player = (props) => {
     [api.position]
   );
 
-  useEffect(()=>{
-    !props.isPreview && camera.position.set(20,20,20)
-  },[props.isPreview])
+  useEffect(() => {
+    !props.isPreview && camera.position.set(25, 25, 25);
+  }, [props.isPreview]);
 
   useFrame(() => {
     if (props.isPreview) {
