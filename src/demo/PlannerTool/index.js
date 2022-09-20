@@ -1,5 +1,5 @@
 import { Physics } from "@react-three/cannon";
-import { OrbitControls, Sky, Stars } from "@react-three/drei";
+import { OrbitControls, Sky, Stars, useGLTF } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { nanoid } from "nanoid";
 import { useState } from "react";
@@ -87,6 +87,11 @@ const CityPlannerTool = () => {
     ));
   };
 
+  const ModelShoe=()=>{
+    const gltf = useGLTF('Shoe/shoe.gltf')
+    console.log(gltf)
+  }
+
   return (
     <div>
       {!isPreview && (
@@ -145,6 +150,7 @@ const CityPlannerTool = () => {
           style={{ backgroundColor: "black" }}
           shadows
         >
+          {ModelShoe()}
           {isPreview && <Sky sunPosition={[100, 25, 100]} />}
           {!isPreview && (
             <OrbitControls
